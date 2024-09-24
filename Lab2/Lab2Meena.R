@@ -114,6 +114,17 @@ lines(ecdf(EPI.new))
 
 
 
+
+
+# ADDED BOXPLOTS HERE
+# NUMBER 2 ON LAST SLIDE!!
+# Boxplot comparing EPI.new, BDH.new, and ECS.new
+boxplot(EPI.new, BDH.new, ECS.new, names=c("EPI.new", "BDH.new", "ECS.new"),
+        main="Boxplot Comparison of EPI.new, BDH.new, and ECS.new",
+        col=c("lightblue", "lightgreen", "lightcoral"))
+
+
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
 #EXERCISE 2
 
 library(ggplot2)  # For plotting
@@ -268,3 +279,33 @@ ggplot(lin.mod.bdh, aes(x = .fitted, y = .resid)) +
   geom_point() +
   geom_hline(yintercept = 0) +
   labs(title = 'Residual vs. Fitted Values Plot for BDH', x = 'Fitted Values', y = 'Residuals')
+
+
+
+
+
+
+#CONCLUSION!!
+
+#Please push to your github repository: COMPLETED
+
+#1. All your code in a *.R or *.MD file : COMPLETED
+
+
+#2. Boxplot comparing 3 variables: COMPLETED
+# I created a boxplot comparing EPI.new, BDH.new, and ECS.new.
+
+
+#3. Q-Q plots for 3 variables compared to some known distribution: COMPLETED
+# I created Q-Q plots for EPI.new, BDH.new, and ECS.new against a normal distribution and the beta distribution for BDH.new.
+
+
+#4. ECDF plots for 3 variables compared to each other: COMPLETED
+# I generated ECDF plots for EPI.new, BDH.new, and ECS.new, and compared them against the normal distribution
+
+
+#5. Summary stats and select plots from 3 linear models: COMPLETED
+# I fitted three linear models: EPI.new vs. population_log , ECO.new vs. population_log , BDH.new vs. population_log
+
+
+
