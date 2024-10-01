@@ -827,48 +827,37 @@ for (k in ks_abalone) {
 # bullet 3
 # • Evaluate clustering using Plot the best clustering output for both.
 
-# Install necessary libraries if not already installed
-# install.packages("factoextra")
+# Exercise 3 - Bullet 3
+# Plot the best clustering output for both the Iris and Abalone datasets
 
-# Load necessary library
-library(factoextra)
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
 
-# ------------ Clustering and Plotting for Iris Dataset ------------
+# ---- Best Clustering Output for Iris Dataset ---- #
+# Assuming the optimal k for Iris is 3 (from previous analysis)
+optimal_k_iris <- 3
 
-# Iris dataset: Load data
-iris_data <- iris[, -5]  # Remove the Species column for clustering
+# Run k-means with optimal k
+iris.km_best <- kmeans(iris[, -5], centers = optimal_k_iris)
+assigned.clusters_best_iris <- as.factor(iris.km_best$cluster)
 
-# Set the best k for Iris (assumed to be k = 3 based on WSS plot)
-best_k_iris <- 3
+# Visualize the best clustering results for the Iris dataset
+ggplot(iris, aes(x = Petal.Length, y = Petal.Width, colour = assigned.clusters_best_iris)) +
+  geom_point() +
+  labs(title = "Best K-means Clustering of Iris Dataset (k = 3)") +
+  theme_minimal()
 
-# Perform K-means clustering with the best k for Iris
-set.seed(123)  # Setting seed for reproducibility
-iris_kmeans_best <- kmeans(iris_data, centers = best_k_iris)
+# ---- Best Clustering Output for Abalone Dataset ---- #
+# Assuming the optimal k for Abalone is 3 (from previous analysis)
+optimal_k_abalone <- 3
 
-# Plot the best clustering for Iris dataset
-fviz_cluster(iris_kmeans_best, data = iris_data, 
-             palette = c("#2E9FDF", "#00AFBB", "#E7B800"),  # Custom color palette
-             geom = "point",  # Use points for plotting
-             ellipse.type = "euclid",  # Add ellipses for clusters
-             ggtheme = theme_minimal(),  # Minimal theme for better visualization
-             main = "Best Clustering for Iris Dataset (k = 3)")
+# Run k-means with optimal k
+abalone.km_best <- kmeans(abalone_numeric, centers = optimal_k_abalone)
+assigned.clusters_best_abalone <- as.factor(abalone.km_best$cluster)
 
-# ------------ Clustering and Plotting for Abalone Dataset ------------
-
-# Assuming abalone_data_scaled is already scaled
-# Abalone dataset: Load or use preprocessed data (abalone_data_scaled)
-
-# Set the best k for Abalone (assumed to be k = 4 based on WSS plot)
-best_k_abalone <- 4
-
-# Perform K-means clustering with the best k for Abalone
-set.seed(123)  # Setting seed for reproducibility
-abalone_kmeans_best <- kmeans(abalone_data_scaled, centers = best_k_abalone)
-
-# Plot the best clustering for Abalone dataset
-fviz_cluster(abalone_kmeans_best, data = abalone_data_scaled, 
-             palette = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),  # Custom color palette
-             geom = "point",  # Use points for plotting
-             ellipse.type = "euclid",  # Add ellipses for clusters
-             ggtheme = theme_minimal(),  # Minimal theme for better visualization
-             main = "Best Clustering for Abalone Dataset (k = 4)")
+# Visualize the best clustering results for the Abalone dataset
+ggplot(abalone, aes(x = Length, y = Diameter, colour = assigned.clusters_best_abalone)) +
+  geom_point() +
+  labs(title = "Best K-means Clustering of Abalone Dataset (k = 3)") +
+  theme_minimal()
