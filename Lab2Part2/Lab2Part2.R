@@ -1,5 +1,7 @@
 #Lab 2 Part 2 Meena
 
+#NOTES: I took each bullet for the 3 exercises & made it its own section! Thank YOU
+
 #Code he provided 
 
 library("e1071")
@@ -142,20 +144,17 @@ feature_set_3 <- c("viscera_weight", "shell_weight")        # Subset 3
 
 
 
-# Create a function to run Naive Bayes and return predictions
 run_naive_bayes <- function(features) {
   classifier <- naiveBayes(abalone[, features], abalone$rings)
   predictions <- predict(classifier, abalone[, features])
   return(predictions)
 }
 
-# Run Naive Bayes on different subsets and store predictions
 predictions_1 <- run_naive_bayes(feature_set_1)
 predictions_2 <- run_naive_bayes(feature_set_2)
 predictions_3 <- run_naive_bayes(feature_set_3)
 
 
-# Compare models using contingency tables
 cat("Contingency Table for Feature Set 1:\n")
 print(table(predictions_1, abalone$rings, dnn = list('predicted', 'actual')))
 
@@ -286,7 +285,6 @@ print(KNNpred)
 print(contingency.table)
 
 # Slide 3
-# Assuming 'contingency.table' is defined and valid
 contingency.matrix <- as.matrix(contingency.table)
 
 # Check if abalone.test is not empty
@@ -294,11 +292,9 @@ if (nrow(abalone.test) == 0) {
   stop("The test set is empty. Please check your data.")
 }
 
-# Calculate initial accuracy
 initial_accuracy <- sum(diag(contingency.matrix)) / length(abalone.test$age.group)
 print(paste("Initial Accuracy:", initial_accuracy))
 
-# Initialize accuracy vector
 accuracy <- c()
 ks <- c(35, 45, 55, 65, 75, 85, 95, 105)  # Using original k values
 
@@ -320,11 +316,9 @@ for (k in ks) {
     next  # Skip this iteration if the confusion matrix is empty
   }
   
-  # Calculate and store accuracy
   accuracy <- c(accuracy, sum(diag(cm)) / length(abalone.test$age.group))  # Use length of test group for total counts
 }
 
-# Plot accuracy vs k values
 plot(ks, accuracy, type = "b", ylim = c(0.67, 0.69), xlab = "Number of Neighbors (k)", ylab = "Accuracy", main = "KNN Accuracy by k")
 
 
@@ -347,11 +341,10 @@ plot(ks, accuracy, type = "b", ylim = c(0.67, 0.69), xlab = "Number of Neighbors
 
 
 
-# Load necessary libraries
 library(class)  # For kNN
 library(caret)  # For data splitting
 
-# Read dataset
+
 data(iris)
 
 # Rename columns (if necessary, but it's already named correctly)
@@ -363,11 +356,9 @@ trainIndex <- createDataPartition(iris$Species, p = .7,
                                   list = FALSE, 
                                   times = 1)
 
-# Create train & test sets based on sampled indexes
 irisTrain <- iris[trainIndex, ]
 irisTest <- iris[-trainIndex, ]
 
-# Check structure and sizes
 str(irisTrain)
 str(irisTest)
 
@@ -385,14 +376,11 @@ test_data <- irisTest[, -5]    # Exclude the Species column
 # Perform KNN
 KNNpred <- knn(train = train_data, test = test_data, cl = irisTrain$Species, k = k)
 
-# Create a contingency table
 contingency.table <- table(KNNpred, irisTest$Species)
 
-# Print predictions and the contingency table
 print(KNNpred)
 print(contingency.table)
 
-# Calculate initial accuracy
 contingency.matrix <- as.matrix(contingency.table)
 
 # Check if irisTest is not empty
@@ -408,7 +396,6 @@ print(paste("Initial Accuracy:", initial_accuracy))
 accuracy <- c()
 ks <- seq(1, 15, by = 2)  # Using odd k values for diversity
 
-# Loop through each k value for KNN
 for (k in ks) {
   # Ensure k does not exceed the number of training samples
   if (k > nrow(irisTrain)) {
@@ -418,19 +405,15 @@ for (k in ks) {
   # KNN prediction
   KNNpred <- knn(train = train_data, test = test_data, cl = irisTrain$Species, k = k)
   
-  # Create confusion matrix
   cm <- as.matrix(table(Actual = irisTest$Species, Predicted = KNNpred))
   
-  # Check if confusion matrix is valid
   if (nrow(cm) == 0 || ncol(cm) == 0) {
     next  # Skip this iteration if the confusion matrix is empty
   }
   
-  # Calculate and store accuracy
   accuracy <- c(accuracy, sum(diag(cm)) / length(irisTest$Species))  # Use length of test group for total counts
 }
 
-# Plot accuracy vs k values
 plot(ks, accuracy, type = "b", ylim = c(0, 1), xlab = "Number of Neighbors (k)", ylab = "Accuracy", main = "KNN Accuracy by k for Iris Dataset")
 
 
@@ -442,29 +425,29 @@ plot(ks, accuracy, type = "b", ylim = c(0, 1), xlab = "Number of Neighbors (k)",
 
 # Exercise 2 - KNN with Two Different Subsets of Features
 
-# Load necessary libraries
+
 library(class)  # For kNN
 library(caret)  # For data splitting
 library(ggplot2)  # For enhanced plotting
 
-# Read dataset
+
 data(iris)
 
-# Prepare the data: Create a stratified sample (~70%)
+
 set.seed(123)  # Set seed for reproducibility
 trainIndex <- createDataPartition(iris$Species, p = .7, 
                                   list = FALSE, 
                                   times = 1)
 
-# Create train & test sets based on sampled indexes
+
 irisTrain <- iris[trainIndex, ]
 irisTest <- iris[-trainIndex, ]
 
-# Function to perform KNN with a given feature subset
+
 perform_knn <- function(train_data, test_data, k_values) {
   accuracy <- c()  # Initialize accuracy vector
   
-  # Loop through each k value for KNN
+  
   for (k in k_values) {
     # KNN prediction
     KNNpred <- knn(train = train_data, test = test_data, cl = irisTrain$Species, k = k)
@@ -479,21 +462,19 @@ perform_knn <- function(train_data, test_data, k_values) {
   return(list(accuracy = accuracy, cm = cm))
 }
 
-# Define k values
+
 ks <- seq(1, 15, by = 2)  # Using odd k values for diversity
 
-# Subset 1: Sepal.Length and Sepal.Width
+
 train_data1 <- irisTrain[, c("Sepal.Length", "Sepal.Width")]
 test_data1 <- irisTest[, c("Sepal.Length", "Sepal.Width")]
 
-# Perform KNN for Subset 1
+
 results1 <- perform_knn(train_data1, test_data1, ks)
 
-# Subset 2: Petal.Length and Petal.Width
 train_data2 <- irisTrain[, c("Petal.Length", "Petal.Width")]
 test_data2 <- irisTest[, c("Petal.Length", "Petal.Width")]
 
-# Perform KNN for Subset 2
 results2 <- perform_knn(train_data2, test_data2, ks)
 
 
@@ -502,19 +483,16 @@ results2 <- perform_knn(train_data2, test_data2, ks)
 
 # Exercise 2 - Bullet 3: Compare models using contingency tables and accuracy plots
 
-# Print contingency tables for both subsets
 cat("Contingency Table for Subset 1:\n")
 print(results1$cm)
 
 cat("\nContingency Table for Subset 2:\n")
 print(results2$cm)
 
-# Combine accuracy results into a data frame for ggplot
 accuracy_df <- data.frame(k = rep(ks, 2), 
                           Accuracy = c(results1$accuracy, results2$accuracy), 
                           Subset = rep(c("Sepal Features", "Petal Features"), each = length(ks)))
 
-# Create a combined accuracy plot using ggplot2
 ggplot(accuracy_df, aes(x = k, y = Accuracy, color = Subset)) +
   geom_line() +
   geom_point() +
@@ -561,7 +539,6 @@ ggplot(accuracy_df, aes(x = k, y = Accuracy, color = Subset)) +
 # Plot iris petal length vs. petal width, color by species
 ggplot(iris, aes(x = Petal.Length, y = Petal.Width, colour = Species)) +
   geom_point()
-# set seed for random number generator
 set.seed(123)
 # run k-means
 iris.km <- kmeans(iris[,-5], centers = 3)
@@ -627,7 +604,6 @@ set.seed(123)
 iris.km <- kmeans(iris[, -5], centers = 3)  # Exclude Species column
 assigned.clusters <- as.factor(iris.km$cluster)
 
-# Visualize clustering results for the Iris dataset
 ggplot(iris, aes(x = Petal.Length, y = Petal.Width, colour = assigned.clusters)) +
   geom_point() +
   labs(title = "K-means Clustering of Iris Dataset")
@@ -653,23 +629,18 @@ colnames(abalone) <- c("Sex", "Length", "Diameter", "Height",
                        "WholeWeight", "ShuckedWeight", 
                        "VisceraWeight", "ShellWeight", "Rings")
 
-# Display the structure of the dataset
 str(abalone)
 
-# Prepare the abalone dataset: Exclude the non-numeric column 'Sex'
 abalone_numeric <- abalone %>% select(-Sex)
 
-# Optionally normalize the data
 abalone_numeric <- scale(abalone_numeric)
 
-# Set seed for random number generator
 set.seed(123)
 
 # Run k-means for the abalone dataset (assuming 3 clusters)
 abalone.km <- kmeans(abalone_numeric, centers = 3)
 assigned.clusters_abalone <- as.factor(abalone.km$cluster)
 
-# Visualize clustering results for the Abalone dataset
 ggplot(abalone, aes(x = Length, y = Diameter, colour = assigned.clusters_abalone)) +
   geom_point() +
   labs(title = "K-means Clustering of Abalone Dataset")
@@ -683,9 +654,6 @@ labeled.clusters[labeled.clusters == 3] <- "virginica"
 # Compare labeled clusters with actual species
 comparison_table <- table(labeled.clusters, iris[, 5])
 print(comparison_table)
-
-# If you want to do the same for the Abalone dataset, you might label the clusters
-# based on your specific analysis needs (if you have labels for them).
 
 
 
@@ -701,11 +669,10 @@ print(comparison_table)
 # Bullet 2
 # Try different values of k for both the Iris and Abalone datasets
 
-# Load necessary libraries
 library(ggplot2)
 library(dplyr)
 
-#### ---- Bullet 1 Code for Iris Dataset ---- ####
+#### Bullet 1 Code for Iris Dataset ####
 
 # Load the Iris dataset
 data(iris)
@@ -726,7 +693,7 @@ ggplot(iris, aes(x = Petal.Length, y = Petal.Width, colour = assigned.clusters))
   geom_point() +
   labs(title = "K-means Clustering of Iris Dataset")
 
-#### ---- Bullet 2 Code for Iris Dataset ---- ####
+####  Bullet 2 Code for Iris Dataset  ####
 
 # WSS Calculation for different values of k (Iris Dataset)
 wss_iris <- c()
@@ -743,53 +710,43 @@ plot(ks_iris, wss_iris, type = "b",
      xlab = "Number of Clusters (k)", 
      ylab = "Total Within-Cluster Sum of Squares")
 
-# Visualizing Clustering Results for different k values (Iris Dataset)
 for (k in ks_iris) {
   iris.km <- kmeans(iris[, -5], centers = k)  # Exclude Species column
   assigned.clusters <- as.factor(iris.km$cluster)
   
-  # Plot results for each k
   ggplot(iris, aes(x = Petal.Length, y = Petal.Width, colour = assigned.clusters)) +
     geom_point() +
     labs(title = paste("K-means Clustering for Iris Dataset (k =", k, ")")) +
     theme_minimal()
 }
 
-#### ---- Bullet 1 Code for Abalone Dataset ---- ####
+#### Bullet 1 Code for Abalone Dataset  ####
 
-# Load the Abalone dataset
 abalone <- read.table("C:/Users/Meena/Desktop/DataAnalytics/DataAnalytics/Lab2Part2/abalone/abalone.data", 
                       sep = ",", header = FALSE)
 
-# Assign appropriate column names
 colnames(abalone) <- c("Sex", "Length", "Diameter", "Height", 
                        "WholeWeight", "ShuckedWeight", 
                        "VisceraWeight", "ShellWeight", "Rings")
 
-# Display the structure of the dataset
 str(abalone)
 
-# Prepare the abalone dataset by excluding the non-numeric column 'Sex'
 abalone_numeric <- abalone %>% select(-Sex)
 
-# Optionally normalize the data
+
 abalone_numeric <- scale(abalone_numeric)
 
-# Set seed for random number generator
 set.seed(123)
 
-# Run k-means for the Abalone dataset (assuming 3 clusters)
 abalone.km <- kmeans(abalone_numeric, centers = 3)
 assigned.clusters_abalone <- as.factor(abalone.km$cluster)
 
-# Visualize clustering results for the Abalone dataset
 ggplot(abalone, aes(x = Length, y = Diameter, colour = assigned.clusters_abalone)) +
   geom_point() +
   labs(title = "K-means Clustering of Abalone Dataset")
 
-#### ---- Bullet 2 Code for Abalone Dataset ---- ####
+####  Bullet 2 Code for Abalone Dataset  ####
 
-# WSS Calculation for different values of k (Abalone Dataset)
 wss_abalone <- c()
 ks_abalone <- c(2, 3, 4, 5, 6)  # Trying multiple k values
 
@@ -830,11 +787,10 @@ for (k in ks_abalone) {
 # Exercise 3 - Bullet 3
 # Plot the best clustering output for both the Iris and Abalone datasets
 
-# Load necessary libraries
 library(ggplot2)
 library(dplyr)
 
-# ---- Best Clustering Output for Iris Dataset ---- #
+# Best Clustering Output for Iris Dataset  #
 # Assuming the optimal k for Iris is 3 (from previous analysis)
 optimal_k_iris <- 3
 
@@ -842,21 +798,18 @@ optimal_k_iris <- 3
 iris.km_best <- kmeans(iris[, -5], centers = optimal_k_iris)
 assigned.clusters_best_iris <- as.factor(iris.km_best$cluster)
 
-# Visualize the best clustering results for the Iris dataset
 ggplot(iris, aes(x = Petal.Length, y = Petal.Width, colour = assigned.clusters_best_iris)) +
   geom_point() +
   labs(title = "Best K-means Clustering of Iris Dataset (k = 3)") +
   theme_minimal()
 
-# ---- Best Clustering Output for Abalone Dataset ---- #
+# Best Clustering Output for Abalone Dataset  #
 # Assuming the optimal k for Abalone is 3 (from previous analysis)
 optimal_k_abalone <- 3
 
-# Run k-means with optimal k
 abalone.km_best <- kmeans(abalone_numeric, centers = optimal_k_abalone)
 assigned.clusters_best_abalone <- as.factor(abalone.km_best$cluster)
 
-# Visualize the best clustering results for the Abalone dataset
 ggplot(abalone, aes(x = Length, y = Diameter, colour = assigned.clusters_best_abalone)) +
   geom_point() +
   labs(title = "Best K-means Clustering of Abalone Dataset (k = 3)") +
