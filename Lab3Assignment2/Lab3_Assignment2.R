@@ -400,3 +400,10 @@ best_k_group2 <- which.min(diff(diff(wcss_group2)))
 print(paste("Best k for Group 1:", best_k_group1))
 print(paste("Best k for Group 2:", best_k_group2))
 
+
+#Explanation:
+#The k-means model indicated that the optimal number of clusters (
+#𝑘
+#k) for both Group 1 and Group 2 is 7. When comparing the models using the within-cluster sum of squares (WCSS) at this 
+#𝑘
+#k, Group 1 has a WCSS of approximately 53,119, while Group 2 has a WCSS of about 57,687. Since Group 1 has a lower WCSS value, it suggests a better fit for the data compared to Group 2.
