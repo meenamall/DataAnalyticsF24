@@ -327,7 +327,7 @@ ny_house_data <- read.csv("NY-House-Dataset.csv")
 head(ny_house_data)
 
 # Fit the linear model
-linear_model <- lm(PRICE ~ BEDS + BATH + PROPERTYSQFT, data = ny_house_data)
+linear_model <- lm(PRICE ~ BEDS + BATH + PROPERTYSQFT, data = ny_house_data[ny_house_data$PRICE<195000000,])
 
 
 summary(linear_model)
@@ -335,7 +335,7 @@ summary(linear_model)
 
 
 # Scatterplot with best fit line for PROPERTYSQFT
-ggplot(ny_house_data, aes(x = PROPERTYSQFT, y = PRICE)) +
+ggplot(ny_house_data[ny_house_data$PRICE<195000000,], aes(x = PROPERTYSQFT, y = PRICE)) +
   geom_point(alpha = 0.6) +
   geom_smooth(method = "lm", color = "blue") +
   labs(title = "Scatterplot of PRICE vs PROPERTYSQFT",
@@ -347,7 +347,7 @@ ggplot(ny_house_data, aes(x = PROPERTYSQFT, y = PRICE)) +
 ny_house_data$residuals <- resid(linear_model)
 
 # Plot residuals
-ggplot(ny_house_data, aes(x = fitted(linear_model), y = residuals)) +
+ggplot(linear_model, aes(x = fitted(linear_model), y = resid(linear_model))) +
   geom_point(alpha = 0.6) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Residuals of the Linear Model",
