@@ -84,13 +84,14 @@ sd_cases_2020 <- sd(data_2020$cases)
 mean_cases_2021 <- mean(data_2021$cases)
 sd_cases_2021 <- sd(data_2021$cases)
 
-# Histogram for "Cases"  
+# Zoomed-in Histogram for "Cases"
 ggplot() +
   geom_histogram(data = data_2020, aes(x = cases), bins = 30, fill = "blue", alpha = 0.6) +
   geom_histogram(data = data_2021, aes(x = cases), bins = 30, fill = "green", alpha = 0.6) +
   labs(title = "Histogram of COVID-19 Cases (2020 vs 2021)", x = "Number of Cases", y = "Frequency") +
   scale_y_continuous(labels = comma) +  # Format y-axis labels with commas
-  xlim(0, 2000000) +  # Adjust limits based on your data
+  xlim(0, 90000) +  # Zoom in to a more appropriate limit
+  ylim(0, 200000) +  # Zoom in to a more appropriate limit
   theme_minimal() +
   stat_function(fun = dnorm, args = list(mean = mean_cases_2020, sd = sd_cases_2020), color = "darkblue", size = 1) +
   stat_function(fun = dnorm, args = list(mean = mean_cases_2021, sd = sd_cases_2021), color = "darkgreen", size = 1)
@@ -108,6 +109,7 @@ ggplot() +
   labs(title = "Histogram of COVID-19 Deaths (2020 vs 2021)", x = "Number of Deaths", y = "Frequency") +
   scale_y_continuous(labels = comma) +  # Format y-axis labels with commas
   xlim(0, 3000) +  # Adjust limits based on your data
+  ylim(0, 400000) +  # Adjust limits based on your data
   theme_minimal() +
   stat_function(fun = dnorm, args = list(mean = mean_deaths_2020, sd = sd_deaths_2020), color = "darkred", size = 1) +
   stat_function(fun = dnorm, args = list(mean = mean_deaths_2021, sd = sd_deaths_2021), color = "purple4", size = 1)
@@ -152,13 +154,17 @@ data_2021 <- data_2021[data_2021$cases >= 0 & data_2021$deaths >= 0, ]
 ggplot() +
   stat_ecdf(data = data_2020, aes(x = cases), color = "blue") +
   stat_ecdf(data = data_2021, aes(x = cases), color = "green") +
+  xlim(0, 1000000) +  # Adjust limits based on your data
+  ylim(0, 1.50) +  # Adjust limits based on your data
   labs(title = "ECDF of COVID-19 Cases (2020 vs 2021)", x = "Number of Cases", y = "ECDF") +
   theme_minimal()
 
 # Plot ECDFs for Deaths
 ggplot() +
-  stat_ecdf(data = data_2020, aes(x = deaths), color = "red") +
-  stat_ecdf(data = data_2021, aes(x = deaths), color = "purple") +
+  stat_ecdf(data = data_2020, aes(x = deaths), color = "blue") +
+  stat_ecdf(data = data_2021, aes(x = deaths), color = "orange") +
+  xlim(0, 70000) +  # Adjust limits based on your data
+  ylim(0, 1.20) +  # Adjust limits based on your data
   labs(title = "ECDF of COVID-19 Deaths (2020 vs 2021)", x = "Number of Deaths", y = "ECDF") +
   theme_minimal()
 
@@ -166,7 +172,7 @@ ggplot() +
 qqnorm(data_2020$cases, main = "Q-Q Plot for COVID-19 Cases (2020)", col = "blue")
 qqline(data_2020$cases, col = "darkblue")
 qqnorm(data_2021$cases, main = "Q-Q Plot for COVID-19 Cases (2021)", col = "green")
-qqline(data_2021$cases, col = "darkgreen")
+qqline(data_2021$cases, col = "yellow")
 
 # Q-Q plot for Deaths
 qqnorm(data_2020$deaths, main = "Q-Q Plot for COVID-19 Deaths (2020)", col = "red")
@@ -228,7 +234,8 @@ ggplot() +
   geom_histogram(data = filtered_data_2021, aes(x = cases), bins = 30, fill = "green", alpha = 0.6) +
   labs(title = "Histogram of COVID-19 Cases (Filtered States)", x = "Number of Cases", y = "Frequency") +
   scale_y_continuous(labels = scales::comma) + 
-  xlim(0, 2000000) +  
+  xlim(0, 500000) +  
+  ylim(0, 10000) +  
   theme_minimal() +
   stat_function(fun = dnorm, args = list(mean = mean_cases_2020, sd = sd_cases_2020), color = "darkblue", size = 1) +
   stat_function(fun = dnorm, args = list(mean = mean_cases_2021, sd = sd_cases_2021), color = "darkgreen", size = 1)
@@ -246,6 +253,7 @@ ggplot() +
   labs(title = "Histogram of COVID-19 Deaths (Filtered States)", x = "Number of Deaths", y = "Frequency") +
   scale_y_continuous(labels = scales::comma) +  
   xlim(0, 3000) +  
+  ylim(0, 15000) +  
   theme_minimal() +
   stat_function(fun = dnorm, args = list(mean = mean_deaths_2020, sd = sd_deaths_2020), color = "darkred", size = 1) +
   stat_function(fun = dnorm, args = list(mean = mean_deaths_2021, sd = sd_deaths_2021), color = "purple4", size = 1)
@@ -343,16 +351,25 @@ ggplot(ny_house_data[ny_house_data$PRICE<195000000,], aes(x = PROPERTYSQFT, y = 
        y = "Price (PRICE)") +
   theme_minimal()
 
+
+# Remove rows with missing values in the relevant columns
+cleaned_data <- na.omit(ny_house_data[, c("PRICE", "BEDS", "BATH", "PROPERTYSQFT")])
+
+# Fit the linear model on the cleaned data
+linear_model <- lm(PRICE ~ BEDS + BATH + PROPERTYSQFT, data = cleaned_data)
+
 # Calculate residuals
-ny_house_data$residuals <- resid(linear_model)
+cleaned_data$residuals <- resid(linear_model)
 
 # Plot residuals
-ggplot(linear_model, aes(x = fitted(linear_model), y = resid(linear_model))) +
+ggplot(cleaned_data, aes(x = fitted(linear_model), y = residuals)) +
   geom_point(alpha = 0.6) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Residuals of the Linear Model",
        x = "Fitted Values",
        y = "Residuals") +
+    xlim(0, 40000000) +  
+    ylim(0, 30000000) +  
   theme_minimal()
 
 
@@ -393,6 +410,8 @@ ggplot(subset_data, aes(x = PROPERTYSQFT, y = PRICE)) +
   labs(title = "Scatterplot of PRICE vs PROPERTYSQFT (Subset)",
        x = "Property Square Footage (PROPERTYSQFT)",
        y = "Price (PRICE)") +
+  xlim(0, 40000) +  
+  ylim(0, 30000000) + 
   theme_minimal()
 
 # Calculate residuals for the subset
@@ -405,6 +424,8 @@ ggplot(subset_data, aes(x = fitted(subset_model), y = residuals)) +
   labs(title = "Residuals of the Linear Model (Subset)",
        x = "Fitted Values",
        y = "Residuals") +
+  xlim(0, 400000) +  
+  ylim(0, 2000000) + 
   theme_minimal()
 
 
