@@ -124,6 +124,11 @@ varImpPlot(rf_model)
 
 
 #Train a classifier model to predict wine type using the data projected into the first 3 PCs.
+# Load the necessary libraries
+library(caret)  # For createDataPartition
+library(randomForest)  # For random forest model
+
+# Train a classifier model to predict wine type using the data projected into the first 3 PCs.
 
 # Step 1: Perform PCA on the dataset (excluding the 'Class' column)
 # Scale the data and perform PCA
@@ -163,8 +168,6 @@ print(confusion_matrix_pca)
 # Step 6: Plot variable importance based on the first 3 PCs
 importance(rf_model_pca)
 varImpPlot(rf_model_pca)
-
-
 
 
 
@@ -338,3 +341,17 @@ ggplot(metrics_df, aes(x = Model, y = Value, fill = Metric)) +
   facet_wrap(~Metric) +
   theme_minimal() +
   labs(title = "Model Metrics Comparison", y = "Score", x = "Model")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
