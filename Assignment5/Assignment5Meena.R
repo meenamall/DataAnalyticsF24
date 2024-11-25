@@ -472,4 +472,4 @@ print(rf_cm)
 cat("\nExplanation of Results:\n")
 cat("Naive Bayes showed moderate accuracy, as expected due to its assumption of feature independence. k-NN performed better after resolving tie issues with a higher k and weighted votes. Random Forest outperformed both due to its ability to model non-linear relationships and handle feature interactions. The models generalized well overall, though some misclassifications may occur due to imbalanced classes. Further balancing or hyperparameter tuning could improve performance.")
 
-
+#################################
