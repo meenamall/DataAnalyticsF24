@@ -35,7 +35,6 @@ head(nyc_data_borough)
 
 
 # Question 1b
-
 # Load necessary libraries
 library(dplyr)
 library(ggplot2)
@@ -44,55 +43,57 @@ library(ggplot2)
 manhattan_data <- nyc_data_borough
 
 # Perform exploratory data analysis (EDA) for SalePrice
-
-# Descriptive statistics for SalePrice
-summary(manhattan_data$SalePrice)
+# Descriptive statistics for SalePrice (corrected column name)
+summary(manhattan_data$SALE.PRICE)
 
 # Plotting the histogram for SalePrice to visualize the distribution
-ggplot(manhattan_data, aes(x = SalePrice)) +
+ggplot(manhattan_data, aes(x = SALE.PRICE)) +  # Corrected column name here
   geom_histogram(bins = 50, fill = "blue", color = "black", alpha = 0.7) +
   geom_density(color = "red", size = 1) +
   labs(title = "SalePrice Distribution for Manhattan", x = "SalePrice", y = "Frequency") +
   theme_minimal()
 
+# Check if SALE.PRICE is numeric
+str(manhattan_data$SALE.PRICE)
+
+# Convert SALE.PRICE to numeric if necessary (if it's a character or factor)
+manhattan_data$SALE.PRICE <- as.numeric(manhattan_data$SALE.PRICE)
+
 # Plotting the boxplot for SalePrice to identify outliers
-ggplot(manhattan_data, aes(x = "", y = SalePrice)) +
+ggplot(manhattan_data, aes(y = SALE.PRICE)) +
   geom_boxplot(fill = "orange", color = "black") +
   labs(title = "Boxplot of SalePrice for Manhattan", x = "", y = "SalePrice") +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank())  # Hide x-axis labels and ticks
 
 # Calculate the IQR to identify outliers for SalePrice
-Q1 <- quantile(manhattan_data$SalePrice, 0.25)
-Q3 <- quantile(manhattan_data$SalePrice, 0.75)
+Q1 <- quantile(manhattan_data$SALE.PRICE, 0.25)  # Corrected column name
+Q3 <- quantile(manhattan_data$SALE.PRICE, 0.75)  # Corrected column name
 IQR <- Q3 - Q1
 lower_bound <- Q1 - 1.5 * IQR
 upper_bound <- Q3 + 1.5 * IQR
 
 # Identifying outliers based on IQR
-outliers <- manhattan_data %>% filter(SalePrice < lower_bound | SalePrice > upper_bound)
+outliers <- manhattan_data %>% filter(SALE.PRICE < lower_bound | SALE.PRICE > upper_bound)  # Corrected column name
 
 # Printing the number of outliers and displaying the outlier data points
 cat("Number of outliers in SalePrice:", nrow(outliers), "\n")
-print(outliers[, c("SalePrice")])
+print(outliers[, c("SALE.PRICE")])  # Corrected column name
+
+
+# Check column names to find the correct name for GrLivArea
+colnames(manhattan_data)
+
+# Filter out missing values for GROSS.SQUARE.FEET and SALE.PRICE
+manhattan_data_clean <- manhattan_data %>%
+  filter(!is.na(GROSS.SQUARE.FEET), !is.na(SALE.PRICE))
 
 # Scatter plot to demonstrate outliers relative to other data points
-ggplot(manhattan_data, aes(x = GrLivArea, y = SalePrice)) +
+ggplot(manhattan_data_clean, aes(x = GROSS.SQUARE.FEET, y = SALE.PRICE)) +  
   geom_point(alpha = 0.6) +
-  geom_point(data = outliers, aes(x = GrLivArea, y = SalePrice), color = "red", size = 3) +
-  labs(title = "SalePrice vs GrLivArea with Outliers Highlighted (Manhattan)", x = "GrLivArea", y = "SalePrice") +
+  geom_point(data = outliers, aes(x = GROSS.SQUARE.FEET, y = SALE.PRICE), color = "red", size = 3) +  
+  labs(title = "SalePrice vs Gross Square Feet with Outliers Highlighted (Manhattan)", x = "Gross Square Feet", y = "Sale Price") +
   theme_minimal()
-
-# Generate the text for the description (5 sentences as requested)
-description <- "
-1. The distribution of 'SalePrice' in Manhattan is right-skewed, with most sales concentrated in the lower price range.
-2. The histogram reveals a concentration of data points in the lower price brackets, with a tail extending toward higher prices.
-3. A boxplot of 'SalePrice' identifies several outliers, with values significantly higher than the interquartile range (IQR).
-4. Outliers were calculated using the IQR method, with extreme values falling outside the 1.5*IQR range, which typically represent higher-end or unique properties.
-5. The scatter plot of 'SalePrice' vs 'GrLivArea' illustrates the relationship between living area and price, with outliers shown in red, indicating properties that differ from the overall pattern.
-"
-
-cat(description)
-
 
 
 
@@ -268,7 +269,6 @@ print(confusionMatrix(knn_pred, nyc_data[[target]]))
 print("Confusion Matrix for Random Forest model:")
 print(confusionMatrix(rf_pred, nyc_data[[target]]))
 
-# Optional: Additional evaluation metrics like accuracy, precision, recall, and F1-score can be obtained from confusionMatrix
 
 
 
@@ -298,50 +298,59 @@ print(confusionMatrix(rf_pred, nyc_data[[target]]))
 #(4000-level 5%, 6000-level 3%)
 
 
+# a). Apply the best performing regression model(s) from 1.c to predict Sale Price based on
+# the variables you chose. Plot the predictions and residuals. Explain how well (or not) the
+# models generalize to the whole dataset and speculate as to the reason. Min. 3-4 sentences
+# (4000-level 5%, 6000-level 3%)
 
-# Check the exact column names
+# Check the exact column names in the dataset
 colnames(nyc_data)
 
+# View the first few rows to confirm the column names are as expected
+head(nyc_data)
+
 # Data cleaning: Adjusting for the correct column names and removing missing values
-nyc_data <- nyc_data[!is.na(`SALE PRICE`) & !is.na(`GROSS SQUARE FEET`) & `SALE PRICE` > 0]
+# Ensure we're referencing the exact column names with backticks around those with special characters or spaces
+nyc_data <- nyc_data[!is.na(nyc_data$`SALE.PRICE`) & !is.na(nyc_data$`GROSS.SQUARE.FEET`) & nyc_data$`SALE.PRICE` > 0, ]
 
 # Ensure factors have consistent levels between training and prediction data
-nyc_data$`BUILDING CLASS CATEGORY` <- factor(nyc_data$`BUILDING CLASS CATEGORY`)
+nyc_data$`BUILDING.CLASS.CATEGORY` <- factor(nyc_data$`BUILDING.CLASS.CATEGORY`)
+nyc_data$`GROSS.SQUARE.FEET` <- factor(nyc_data$`GROSS.SQUARE.FEET`)  # Ensure GROSS.SQUARE.FEET is a factor if needed
 
 # Take a sample of the data (e.g., 10,000 rows) for regression
 set.seed(123)  # For reproducibility
-sample_data <- nyc_data[sample(.N, 10000)]
+sample_data <- nyc_data[sample(nrow(nyc_data), 10000), ]
 
 # Ensure consistent factor levels for the sample data
-sample_data$`BUILDING CLASS CATEGORY` <- factor(sample_data$`BUILDING CLASS CATEGORY`, 
-                                                levels = levels(nyc_data$`BUILDING CLASS CATEGORY`))
+sample_data$`BUILDING.CLASS.CATEGORY` <- factor(sample_data$`BUILDING.CLASS.CATEGORY`, 
+                                                levels = levels(nyc_data$`BUILDING.CLASS.CATEGORY`))
+
+sample_data$`GROSS.SQUARE.FEET` <- factor(sample_data$`GROSS.SQUARE.FEET`, 
+                                          levels = levels(nyc_data$`GROSS.SQUARE.FEET`))  # Make sure the levels match
 
 # Fit the multivariate regression model on the sample data
-model <- lm(`SALE PRICE` ~ `GROSS SQUARE FEET` + `RESIDENTIAL UNITS` + `YEAR BUILT` + `BUILDING CLASS CATEGORY`, 
+model <- lm(`SALE.PRICE` ~ `GROSS.SQUARE.FEET` + `RESIDENTIAL.UNITS` + `YEAR.BUILT` + `BUILDING.CLASS.CATEGORY`, 
             data = sample_data)
 
-# Summary of the model to check the coefficients and performance
-summary(model)
+# Predict the sale prices again
+sample_data$Predicted_Price <- predict(model, newdata = sample_data)
 
-# Make predictions
-sample_data$Predicted_Price <- predict(model, sample_data)
-
-# Calculate residuals
-sample_data$Residuals <- sample_data$`SALE PRICE` - sample_data$Predicted_Price
-
-# Plot actual vs. predicted sale prices
-ggplot(sample_data, aes(x = `SALE PRICE`, y = Predicted_Price)) +
+# Now plot actual vs predicted sale prices
+ggplot(sample_data, aes(x = `SALE.PRICE`, y = Predicted_Price)) +
   geom_point(alpha = 0.5, color = "blue") +
   geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Actual vs. Predicted Sale Prices (Sample)", x = "Actual Sale Price", y = "Predicted Sale Price") +
   theme_minimal()
 
 # Plot residuals vs predicted sale prices
+sample_data$Residuals <- sample_data$`SALE.PRICE` - sample_data$Predicted_Price  # Calculate residuals
 ggplot(sample_data, aes(x = Predicted_Price, y = Residuals)) +
   geom_point(alpha = 0.5, color = "darkgreen") +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
-  labs(title = "Residuals vs. Predicted Sale Prices (Sample)", x = "Predicted Sale Price", y = "Residuals") +
+  labs(title = "Residuals vs. Predicted Sale Prices (Sample)", 
+       x = "Predicted Sale Price", y = "Residuals") +
   theme_minimal()
+
 
 
 
@@ -368,6 +377,9 @@ ggplot(sample_data, aes(x = Predicted_Price, y = Residuals)) +
 
 
 #b). Apply the classification model(s) from 1.d to predict the categorical variable of your choice. Evaluate the results (contingency tables & metrics). Explain how well (or not) the models generalize to the whole dataset and speculate as to the reason. Min. 3-4 sentences (4000-level 4%, 6000-level 3%)
+
+
+
 
 
 # Load necessary libraries
@@ -413,12 +425,17 @@ print(nzv)
 # Remove predictors with zero variance
 valid_predictors <- predictors[!nzv$nzv]
 
-# Check if any predictors remain after removing zero-variance columns
+# Ensure valid predictors remain after filtering zero-variance columns
+valid_predictors <- valid_predictors[!is.na(valid_predictors)]  # Remove NA values
+
+# Ensure valid predictors remain after filtering zero-variance columns
 if(length(valid_predictors) == 0) {
   stop("No valid predictors remain after removing zero-variance columns.")
+} else {
+  print(valid_predictors)  # Print the valid predictors to check
 }
 
-# Use the valid predictors for further analysis
+# Use valid predictors for further analysis
 data <- data[, c(valid_predictors, "BUILDING.CLASS.AT.TIME.OF.SALE")]
 
 # Normalize predictors
@@ -471,5 +488,3 @@ print(rf_cm)
 # Evaluation
 cat("\nExplanation of Results:\n")
 cat("Naive Bayes showed moderate accuracy, as expected due to its assumption of feature independence. k-NN performed better after resolving tie issues with a higher k and weighted votes. Random Forest outperformed both due to its ability to model non-linear relationships and handle feature interactions. The models generalized well overall, though some misclassifications may occur due to imbalanced classes. Further balancing or hyperparameter tuning could improve performance.")
-
-#################################
