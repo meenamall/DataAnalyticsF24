@@ -10,7 +10,6 @@
 #########################################
 # Load Libraries and Datasets
 
-# Load libraries
 library(tidyverse)
 
 # Set file paths
@@ -183,16 +182,6 @@ ggplot(combined_data_clean, aes(x = TotalContribution, y = Rank)) +
   theme_minimal()
 
 ##########################################
-# Discuss Sources of Error and Bias
-
-# Potential sources of error or bias in the data:
-# 1. Missing data or incomplete player statistics, leading to potential bias in calculations.
-# 2. Sampling bias in teams with fewer games or players recorded, skewing averages.
-# 3. Possible confounding factors not included in the dataset, such as coaching strategies or team dynamics.
-# 4. Assumptions about linearity between player contribution and team rank might oversimplify team performance.
-
-
-
 
 
 
@@ -238,12 +227,7 @@ ggplot(combined_data_clean, aes(x = TotalContribution, y = Rank)) +
 ######################################################
 #4. Model Development and Application of model(s) (12%) 
 
-
-
-
-
-
-
+#######
 #Random Forest Regression
 
 # Install and load the randomForest package if you haven't already
@@ -313,7 +297,7 @@ ggplot(data = actual_vs_pred, aes(x = Actual, y = Predicted)) +
 
 
 
-######
+########
 #Support Vector Machines (SVM)
 
 install.packages("ggplot2")
@@ -438,8 +422,7 @@ combined_data_clean$PredictedCluster <- kmeans_model$cluster
 
 
 ######
-#Decision Tree - ???? Get it checked
-
+#Decision Tree 
 
 
 # Install and load necessary libraries
